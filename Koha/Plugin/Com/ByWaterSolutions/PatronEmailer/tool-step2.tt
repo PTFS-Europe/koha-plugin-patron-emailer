@@ -48,6 +48,7 @@
             <td>[% email.content %]<input type="hidden" name="content" value="[% email.content %]" /></td>
             <td>[% email.to_address %]<input type="hidden" name="to_address" value="[% email.to_address %]" /></td>
             <td>[% email.from_address %]<input type="hidden" name="from_address" value="[% email.from_address %]" /></td>
+            <input type="hidden" name="content_type" value="[% email.content_type %]" />
         </tr>
     [% END %]
     </tbody>

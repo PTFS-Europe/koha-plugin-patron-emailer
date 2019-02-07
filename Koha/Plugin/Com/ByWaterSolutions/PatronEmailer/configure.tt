@@ -27,6 +27,8 @@
         </p>
 
         <p>
+            <label for="is_html">HTML message: </label>
+            <input type="checkbox" name="is_html" id="is_html" value="1" checked="checked">
             <label for="body">Email text: </label>
             <br/>
             <textarea rows="15" cols="200" name="body">[% body %]</textarea>

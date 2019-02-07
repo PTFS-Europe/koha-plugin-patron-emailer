@@ -132,6 +132,7 @@ sub tool_step2 {
     $csv->column_names(@$column_names);
 
     my $body_template = $self->retrieve_data('body');
+    my $is_html       = $self->retrieve_data('is_html');
     my $subject       = $self->retrieve_data('subject');
 
     my $schema           = Koha::Database->new()->schema();
@@ -153,6 +154,9 @@ sub tool_step2 {
                     borrowernumber         => $borrower->borrowernumber(),
                     subject                => $subject,
                     content                => $body,
+                    ( $is_html
+                        ? content_type => 'text/html; charset="UTF-8"'
+                        : () ),
                     message_transport_type => 'email',
                     status                 => 'pending',
                     to_address             => $hr->{email},
@@ -184,6 +188,7 @@ sub tool_step3 {
     my @borrowernumber = $cgi->multi_param('borrowernumber');
     my @subject= $cgi->multi_param('subject');
     my @content = $cgi->multi_param('content');
+    my @content_type = $cgi->multi_param('content_type');
     my @to_address = $cgi->multi_param('to_address');
     my @from_address = $cgi->multi_param('from_address');
     my $schema           = Koha::Database->new()->schema();
@@ -193,6 +198,7 @@ sub tool_step3 {
             borrowernumber => $borrowernumber[$i],
             subject => $subject[$i],
             content => $content[$i],
+            ( defined($content_type[$i]) ? $content_type[$i] : ()),
             message_transport_type => $to_address[$i] ne "" ? 'email' : 'print',
             status => 'pending',
             to_address => $to_address[$i],
@@ -220,6 +226,7 @@ sub configure {
 
         ## Grab the values we already have for our settings, if any exist
         $template->param( body      => $self->retrieve_data('body'), );
+        $template->param( is_html   => $self->retrieve_data('is_html'), );
         $template->param( subject   => $self->retrieve_data('subject'), );
         $template->param( delimiter => $delimiter, );
 
@@ -230,6 +237,7 @@ sub configure {
         $self->store_data(
             {
                 body               => $cgi->param('body'),
+                is_html            => $cgi->param('is_html'),
                 subject            => $cgi->param('subject'),
                 delimiter          => $cgi->param('delimiter'),
                 last_configured_by => C4::Context->userenv->{'number'},
